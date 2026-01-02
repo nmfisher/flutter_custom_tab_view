@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mix/mix.dart';
+import 'windows_style_tab_view_theme.dart';
 
 /// Configuration for a single tab in the WindowsStyleTabView.
 class WindowsStyleTab {
@@ -23,27 +25,60 @@ class WindowsStyleTab {
 /// Provides a tab interface similar to Windows tabs with customizable
 /// colors for selected/unselected states. The content switches instantly
 /// with no sliding animation.
+///
+/// ## Using Mix Themes
+///
+/// ```dart
+/// WindowsStyleTabView(
+///   theme: WindowsStyleTabViewTheme.dark(),
+///   tabs: [...],
+/// )
+/// ```
+///
+/// ## Using Individual Colors (Backward Compatible)
+///
+/// ```dart
+/// WindowsStyleTabView(
+///   tabBarBackgroundColor: Colors.grey[900],
+///   selectedTabColor: Colors.blue,
+///   tabs: [...],
+/// )
+/// ```
+///
+/// ## Combining Theme and Individual Colors
+///
+/// Individual color parameters will override theme colors:
+/// ```dart
+/// WindowsStyleTabView(
+///   theme: WindowsStyleTabViewTheme.dark(),
+///   selectedTabColor: Colors.red, // Overrides the dark theme's selected color
+///   tabs: [...],
+/// )
+/// ```
 class WindowsStyleTabView extends StatefulWidget {
   /// The tabs to display
   final List<WindowsStyleTab> tabs;
 
-  /// Tab bar background color
-  final Color tabBarBackgroundColor;
+  /// Mix theme for styling the tab view
+  final WindowsStyleTabViewTheme? theme;
 
-  /// Tab bar border color
-  final Color tabBarBorderColor;
+  /// Tab bar background color (overrides theme)
+  final Color? tabBarBackgroundColor;
 
-  /// Selected tab color
-  final Color selectedTabColor;
+  /// Tab bar border color (overrides theme)
+  final Color? tabBarBorderColor;
 
-  /// Unselected tab color
-  final Color unselectedTabColor;
+  /// Selected tab color (overrides theme)
+  final Color? selectedTabColor;
 
-  /// Selected tab text color
-  final Color selectedTabTextColor;
+  /// Unselected tab color (overrides theme)
+  final Color? unselectedTabColor;
 
-  /// Unselected tab text color
-  final Color unselectedTabTextColor;
+  /// Selected tab text color (overrides theme)
+  final Color? selectedTabTextColor;
+
+  /// Unselected tab text color (overrides theme)
+  final Color? unselectedTabTextColor;
 
   /// Optional callback when the selected tab changes
   final void Function(int index)? onTabChanged;
@@ -58,16 +93,47 @@ class WindowsStyleTabView extends StatefulWidget {
   const WindowsStyleTabView({
     super.key,
     required this.tabs,
-    this.tabBarBackgroundColor = const Color(0xFF2D2D2D),
-    this.tabBarBorderColor = const Color(0xFF1E1E1E),
-    this.selectedTabColor = const Color(0xFF3C3C3C),
-    this.unselectedTabColor = const Color(0xFF2D2D2D),
-    this.selectedTabTextColor = Colors.white,
-    this.unselectedTabTextColor = const Color(0xFF9E9E9E),
+    this.theme,
+    // Deprecated individual color parameters (still supported for backward compatibility)
+    this.tabBarBackgroundColor,
+    this.tabBarBorderColor,
+    this.selectedTabColor,
+    this.unselectedTabColor,
+    this.selectedTabTextColor,
+    this.unselectedTabTextColor,
     this.onTabChanged,
     this.initialIndex = 0,
     this.selectedIndex,
   });
+
+  /// Creates a WindowsStyleTabView with default dark theme values
+  factory WindowsStyleTabView.withDefaults({
+    Key? key,
+    required List<WindowsStyleTab> tabs,
+    Color tabBarBackgroundColor = const Color(0xFF2D2D2D),
+    Color tabBarBorderColor = const Color(0xFF1E1E1E),
+    Color selectedTabColor = const Color(0xFF3C3C3C),
+    Color unselectedTabColor = const Color(0xFF2D2D2D),
+    Color selectedTabTextColor = Colors.white,
+    Color unselectedTabTextColor = const Color(0xFF9E9E9E),
+    void Function(int index)? onTabChanged,
+    int initialIndex = 0,
+    int? selectedIndex,
+  }) {
+    return WindowsStyleTabView(
+      key: key,
+      tabs: tabs,
+      tabBarBackgroundColor: tabBarBackgroundColor,
+      tabBarBorderColor: tabBarBorderColor,
+      selectedTabColor: selectedTabColor,
+      unselectedTabColor: unselectedTabColor,
+      selectedTabTextColor: selectedTabTextColor,
+      unselectedTabTextColor: unselectedTabTextColor,
+      onTabChanged: onTabChanged,
+      initialIndex: initialIndex,
+      selectedIndex: selectedIndex,
+    );
+  }
 
   @override
   State<WindowsStyleTabView> createState() => _WindowsStyleTabViewState();
@@ -78,10 +144,19 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
 
   int get selectedIndex => widget.selectedIndex ?? _selectedIndex ?? widget.initialIndex;
 
+  late final _StyleHelper _styleHelper;
+
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _styleHelper = _StyleHelper(widget);
+  }
+
+  @override
+  void didUpdateWidget(WindowsStyleTabView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _styleHelper = _StyleHelper(widget);
   }
 
   void _selectTab(int index) {
@@ -99,7 +174,7 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTabBar(),
+        _buildTabBar(selectedIndex),
         Expanded(
           child: IndexedStack(
             index: selectedIndex,
@@ -110,93 +185,169 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
     );
   }
 
-  Widget _buildTabBar() {
-    final selectedIndex = this.selectedIndex;
-    return Container(
-      height: 28,
-      padding: const EdgeInsets.only(left: 8, top: 4),
-      decoration: BoxDecoration(
-        color: widget.tabBarBackgroundColor,
-        border: Border(
-          bottom: BorderSide(color: widget.tabBarBorderColor, width: 1),
-        ),
-      ),
+  Widget _buildTabBar(int selectedIndex) {
+    final tabBarStyle = _styleHelper.tabBarStyle;
+    final tabStyle = _styleHelper.tabStyle;
+
+    return Box(
+      style: tabBarStyle,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           for (int i = 0; i < widget.tabs.length; i++) ...[
-            _buildTab(
+            _StyledTab(
               title: widget.tabs[i].title,
               icon: widget.tabs[i].icon,
               index: i,
-              selectedIndex: selectedIndex,
+              isSelected: i == selectedIndex,
+              tabStyle: tabStyle,
+              selectedBoxStyle: _styleHelper.selectedTabBoxStyle,
+              unselectedBoxStyle: _styleHelper.unselectedTabBoxStyle,
+              selectedTextStyle: _styleHelper.selectedTabTextStyle,
+              unselectedTextStyle: _styleHelper.unselectedTabTextStyle,
+              selectedIconStyle: _styleHelper.selectedTabIconStyle,
+              unselectedIconStyle: _styleHelper.unselectedTabIconStyle,
+              onTap: () => _selectTab(i),
             ),
-            if (i < widget.tabs.length - 1) const SizedBox(width: 2),
+            if (i < widget.tabs.length - 1) Box(style: $box.width(2)),
           ],
         ],
       ),
     );
   }
+}
 
-  Widget _buildTab({
-    required String title,
-    required IconData icon,
-    required int index,
-    required int selectedIndex,
-  }) {
-    final isSelected = selectedIndex == index;
+/// Helper class to resolve styles from theme and individual color parameters
+class _StyleHelper {
+  final WindowsStyleTabView widget;
 
-    return GestureDetector(
-      onTap: () => _selectTab(index),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: isSelected ? widget.selectedTabColor : widget.unselectedTabColor,
-            border: Border(
-              top: BorderSide(
-                color: isSelected ? widget.tabBarBorderColor : Colors.transparent,
-                width: 1,
-              ),
-              left: BorderSide(
-                color: isSelected ? widget.tabBarBorderColor : Colors.transparent,
-                width: 1,
-              ),
-              right: BorderSide(
-                color: isSelected ? widget.tabBarBorderColor : Colors.transparent,
-                width: 1,
-              ),
-            ),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(3),
-              topRight: Radius.circular(3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 12,
-                color: isSelected
-                    ? widget.selectedTabTextColor
-                    : widget.unselectedTabTextColor,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isSelected
-                      ? widget.selectedTabTextColor
-                      : widget.unselectedTabTextColor,
-                ),
-              ),
-            ],
-          ),
+  _StyleHelper(this.widget);
+
+  BoxStyler get tabBarStyle {
+    final baseStyle = widget.theme?.tabBarStyle ?? _defaultTheme.tabBarStyle;
+    if (widget.tabBarBackgroundColor != null) {
+      baseStyle.color(widget.tabBarBackgroundColor!);
+    }
+    if (widget.tabBarBorderColor != null) {
+      baseStyle.borderBottom(
+        color: widget.tabBarBorderColor!,
+        width: 1,
+      );
+    }
+    return baseStyle;
+  }
+
+  BoxStyler get tabStyle {
+    return widget.theme?.tabStyle ?? _defaultTheme.tabStyle;
+  }
+
+  BoxStyler get selectedTabBoxStyle {
+    final baseStyle = widget.theme?.selectedTabBoxStyle ?? _defaultTheme.selectedTabBoxStyle;
+    if (widget.selectedTabColor != null) {
+      return baseStyle.color(widget.selectedTabColor!);
+    }
+    if (widget.tabBarBorderColor != null) {
+      return baseStyle
+          .borderTop(color: widget.tabBarBorderColor!, width: 1)
+          .borderLeft(color: widget.tabBarBorderColor!, width: 1)
+          .borderRight(color: widget.tabBarBorderColor!, width: 1);
+    }
+    return baseStyle;
+  }
+
+  BoxStyler get unselectedTabBoxStyle {
+    final baseStyle = widget.theme?.unselectedTabBoxStyle ?? _defaultTheme.unselectedTabBoxStyle;
+    if (widget.unselectedTabColor != null) {
+      return baseStyle.color(widget.unselectedTabColor!);
+    }
+    return baseStyle;
+  }
+
+  TextStyler get selectedTabTextStyle {
+    final baseStyle = widget.theme?.selectedTabTextStyle ?? _defaultTheme.selectedTabTextStyle;
+    if (widget.selectedTabTextColor != null) {
+      return baseStyle.color(widget.selectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  TextStyler get unselectedTabTextStyle {
+    final baseStyle = widget.theme?.unselectedTabTextStyle ?? _defaultTheme.unselectedTabTextStyle;
+    if (widget.unselectedTabTextColor != null) {
+      return baseStyle.color(widget.unselectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  IconStyler get selectedTabIconStyle {
+    final baseStyle = widget.theme?.selectedTabIconStyle ?? _defaultTheme.selectedTabIconStyle;
+    if (widget.selectedTabTextColor != null) {
+      return baseStyle.color(widget.selectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  IconStyler get unselectedTabIconStyle {
+    final baseStyle = widget.theme?.unselectedTabIconStyle ?? _defaultTheme.unselectedTabIconStyle;
+    if (widget.unselectedTabTextColor != null) {
+      return baseStyle.color(widget.unselectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  /// Default theme matching the original widget appearance
+  WindowsStyleTabViewTheme get _defaultTheme {
+    return WindowsStyleTabViewTheme.dark();
+  }
+}
+
+/// A styled tab widget used internally by [WindowsStyleTabView]
+class _StyledTab extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final int index;
+  final bool isSelected;
+  final BoxStyler tabStyle;
+  final BoxStyler selectedBoxStyle;
+  final BoxStyler unselectedBoxStyle;
+  final TextStyler selectedTextStyle;
+  final TextStyler unselectedTextStyle;
+  final IconStyler selectedIconStyle;
+  final IconStyler unselectedIconStyle;
+  final VoidCallback onTap;
+
+  const _StyledTab({
+    required this.title,
+    required this.icon,
+    required this.index,
+    required this.isSelected,
+    required this.tabStyle,
+    required this.selectedBoxStyle,
+    required this.unselectedBoxStyle,
+    required this.selectedTextStyle,
+    required this.unselectedTextStyle,
+    required this.selectedIconStyle,
+    required this.unselectedIconStyle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final boxStyle = isSelected ? selectedBoxStyle : unselectedBoxStyle;
+    final textStyle = isSelected ? selectedTextStyle : unselectedTextStyle;
+    final iconStyle = isSelected ? selectedIconStyle : unselectedIconStyle;
+
+    return Box(
+      style: tabStyle.merge(boxStyle),
+      child: PressableBox(
+        onPress: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StyledIcon(icon: icon, style: iconStyle),
+            Box(style: $box.width(4)),
+            StyledText(title, style: textStyle),
+          ],
         ),
       ),
     );
