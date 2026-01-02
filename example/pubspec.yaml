@@ -1,0 +1,22 @@
+name: custom_tab_view_example
+description: An example app demonstrating the custom_tab_view package
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  custom_tab_view:
+    path: ../
+  mix: ^2.0.0-rc.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
