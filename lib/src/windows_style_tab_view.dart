@@ -144,19 +144,10 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
 
   int get selectedIndex => widget.selectedIndex ?? _selectedIndex ?? widget.initialIndex;
 
-  late final _StyleHelper _styleHelper;
-
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
-    _styleHelper = _StyleHelper(widget);
-  }
-
-  @override
-  void didUpdateWidget(WindowsStyleTabView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _styleHelper = _StyleHelper(widget);
   }
 
   void _selectTab(int index) {
@@ -166,6 +157,80 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
       });
       widget.onTabChanged?.call(index);
     }
+  }
+
+  // Style getters
+
+  WindowsStyleTabViewTheme get _defaultTheme => WindowsStyleTabViewTheme.dark();
+
+  BoxStyler get _tabBarStyle {
+    final baseStyle = widget.theme?.tabBarStyle ?? _defaultTheme.tabBarStyle;
+    if (widget.tabBarBackgroundColor != null) {
+      baseStyle.color(widget.tabBarBackgroundColor!);
+    }
+    if (widget.tabBarBorderColor != null) {
+      baseStyle.borderBottom(
+        color: widget.tabBarBorderColor!,
+        width: 1,
+      );
+    }
+    return baseStyle;
+  }
+
+  BoxStyler get _tabStyle => widget.theme?.tabStyle ?? _defaultTheme.tabStyle;
+
+  BoxStyler get _selectedTabBoxStyle {
+    final baseStyle = widget.theme?.selectedTabBoxStyle ?? _defaultTheme.selectedTabBoxStyle;
+    if (widget.selectedTabColor != null) {
+      return baseStyle.color(widget.selectedTabColor!);
+    }
+    if (widget.tabBarBorderColor != null) {
+      return baseStyle
+          .borderTop(color: widget.tabBarBorderColor!, width: 1)
+          .borderLeft(color: widget.tabBarBorderColor!, width: 1)
+          .borderRight(color: widget.tabBarBorderColor!, width: 1);
+    }
+    return baseStyle;
+  }
+
+  BoxStyler get _unselectedTabBoxStyle {
+    final baseStyle = widget.theme?.unselectedTabBoxStyle ?? _defaultTheme.unselectedTabBoxStyle;
+    if (widget.unselectedTabColor != null) {
+      return baseStyle.color(widget.unselectedTabColor!);
+    }
+    return baseStyle;
+  }
+
+  TextStyler get _selectedTabTextStyle {
+    final baseStyle = widget.theme?.selectedTabTextStyle ?? _defaultTheme.selectedTabTextStyle;
+    if (widget.selectedTabTextColor != null) {
+      return baseStyle.color(widget.selectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  TextStyler get _unselectedTabTextStyle {
+    final baseStyle = widget.theme?.unselectedTabTextStyle ?? _defaultTheme.unselectedTabTextStyle;
+    if (widget.unselectedTabTextColor != null) {
+      return baseStyle.color(widget.unselectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  IconStyler get _selectedTabIconStyle {
+    final baseStyle = widget.theme?.selectedTabIconStyle ?? _defaultTheme.selectedTabIconStyle;
+    if (widget.selectedTabTextColor != null) {
+      return baseStyle.color(widget.selectedTabTextColor!);
+    }
+    return baseStyle;
+  }
+
+  IconStyler get _unselectedTabIconStyle {
+    final baseStyle = widget.theme?.unselectedTabIconStyle ?? _defaultTheme.unselectedTabIconStyle;
+    if (widget.unselectedTabTextColor != null) {
+      return baseStyle.color(widget.unselectedTabTextColor!);
+    }
+    return baseStyle;
   }
 
   @override
@@ -186,11 +251,8 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
   }
 
   Widget _buildTabBar(int selectedIndex) {
-    final tabBarStyle = _styleHelper.tabBarStyle;
-    final tabStyle = _styleHelper.tabStyle;
-
     return Box(
-      style: tabBarStyle,
+      style: _tabBarStyle,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -200,13 +262,13 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
               icon: widget.tabs[i].icon,
               index: i,
               isSelected: i == selectedIndex,
-              tabStyle: tabStyle,
-              selectedBoxStyle: _styleHelper.selectedTabBoxStyle,
-              unselectedBoxStyle: _styleHelper.unselectedTabBoxStyle,
-              selectedTextStyle: _styleHelper.selectedTabTextStyle,
-              unselectedTextStyle: _styleHelper.unselectedTabTextStyle,
-              selectedIconStyle: _styleHelper.selectedTabIconStyle,
-              unselectedIconStyle: _styleHelper.unselectedTabIconStyle,
+              tabStyle: _tabStyle,
+              selectedBoxStyle: _selectedTabBoxStyle,
+              unselectedBoxStyle: _unselectedTabBoxStyle,
+              selectedTextStyle: _selectedTabTextStyle,
+              unselectedTextStyle: _unselectedTabTextStyle,
+              selectedIconStyle: _selectedTabIconStyle,
+              unselectedIconStyle: _unselectedTabIconStyle,
               onTap: () => _selectTab(i),
             ),
             if (i < widget.tabs.length - 1) Box(style: $box.width(2)),
@@ -214,90 +276,6 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
         ],
       ),
     );
-  }
-}
-
-/// Helper class to resolve styles from theme and individual color parameters
-class _StyleHelper {
-  final WindowsStyleTabView widget;
-
-  _StyleHelper(this.widget);
-
-  BoxStyler get tabBarStyle {
-    final baseStyle = widget.theme?.tabBarStyle ?? _defaultTheme.tabBarStyle;
-    if (widget.tabBarBackgroundColor != null) {
-      baseStyle.color(widget.tabBarBackgroundColor!);
-    }
-    if (widget.tabBarBorderColor != null) {
-      baseStyle.borderBottom(
-        color: widget.tabBarBorderColor!,
-        width: 1,
-      );
-    }
-    return baseStyle;
-  }
-
-  BoxStyler get tabStyle {
-    return widget.theme?.tabStyle ?? _defaultTheme.tabStyle;
-  }
-
-  BoxStyler get selectedTabBoxStyle {
-    final baseStyle = widget.theme?.selectedTabBoxStyle ?? _defaultTheme.selectedTabBoxStyle;
-    if (widget.selectedTabColor != null) {
-      return baseStyle.color(widget.selectedTabColor!);
-    }
-    if (widget.tabBarBorderColor != null) {
-      return baseStyle
-          .borderTop(color: widget.tabBarBorderColor!, width: 1)
-          .borderLeft(color: widget.tabBarBorderColor!, width: 1)
-          .borderRight(color: widget.tabBarBorderColor!, width: 1);
-    }
-    return baseStyle;
-  }
-
-  BoxStyler get unselectedTabBoxStyle {
-    final baseStyle = widget.theme?.unselectedTabBoxStyle ?? _defaultTheme.unselectedTabBoxStyle;
-    if (widget.unselectedTabColor != null) {
-      return baseStyle.color(widget.unselectedTabColor!);
-    }
-    return baseStyle;
-  }
-
-  TextStyler get selectedTabTextStyle {
-    final baseStyle = widget.theme?.selectedTabTextStyle ?? _defaultTheme.selectedTabTextStyle;
-    if (widget.selectedTabTextColor != null) {
-      return baseStyle.color(widget.selectedTabTextColor!);
-    }
-    return baseStyle;
-  }
-
-  TextStyler get unselectedTabTextStyle {
-    final baseStyle = widget.theme?.unselectedTabTextStyle ?? _defaultTheme.unselectedTabTextStyle;
-    if (widget.unselectedTabTextColor != null) {
-      return baseStyle.color(widget.unselectedTabTextColor!);
-    }
-    return baseStyle;
-  }
-
-  IconStyler get selectedTabIconStyle {
-    final baseStyle = widget.theme?.selectedTabIconStyle ?? _defaultTheme.selectedTabIconStyle;
-    if (widget.selectedTabTextColor != null) {
-      return baseStyle.color(widget.selectedTabTextColor!);
-    }
-    return baseStyle;
-  }
-
-  IconStyler get unselectedTabIconStyle {
-    final baseStyle = widget.theme?.unselectedTabIconStyle ?? _defaultTheme.unselectedTabIconStyle;
-    if (widget.unselectedTabTextColor != null) {
-      return baseStyle.color(widget.unselectedTabTextColor!);
-    }
-    return baseStyle;
-  }
-
-  /// Default theme matching the original widget appearance
-  WindowsStyleTabViewTheme get _defaultTheme {
-    return WindowsStyleTabViewTheme.dark();
   }
 }
 
