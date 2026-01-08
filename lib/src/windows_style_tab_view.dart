@@ -2,6 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:mix/mix.dart';
 import 'windows_style_tab_view_theme.dart';
 
+/// A builder function for creating a custom tab header layout.
+///
+/// The [buildTab] helper creates a tab widget with proper styling for the
+/// current theme. You can use it to build individual tabs while maintaining
+/// consistent appearance, or build your own tabs from scratch.
+///
+/// Example:
+/// ```dart
+/// tabHeaderLayout: (context, tabs, selectedIndex, buildTab) => Row(
+///   children: [
+///     ...tabs.asMap().entries.map((entry) {
+///       final index = entry.key;
+///       final tab = entry.value;
+///       return buildTab(index, tab);
+///     }),
+///     const Spacer(),
+///     MenuAnchor(...),
+///   ],
+/// )
+/// ```
+typedef TabHeaderLayoutBuilder = Widget Function(
+  BuildContext context,
+  List<WindowsStyleTab> tabs,
+  int selectedIndex,
+  /// Helper to build a tab with proper styling.
+  /// Use this to ensure your custom tabs have the correct appearance.
+  Widget Function(
+    int index,
+    WindowsStyleTab tab, {
+    VoidCallback? onTap,
+  }) buildTab,
+);
+
 /// Configuration for a single tab in the WindowsStyleTabView.
 class WindowsStyleTab {
   /// The title/label for this tab
@@ -90,6 +123,16 @@ class WindowsStyleTabView extends StatefulWidget {
   /// controls which tab is selected. Otherwise, the widget manages its own state.
   final int? selectedIndex;
 
+  /// Optional custom builder for the tab header layout.
+  ///
+  /// When provided, this function is called instead of the default Row layout,
+  /// allowing you to completely customize how tabs and other widgets are arranged
+  /// in the header. You can add custom widgets like menu anchors, buttons, etc.
+  ///
+  /// The [buildTab] helper creates a tab widget with proper styling for the
+  /// current theme.
+  final TabHeaderLayoutBuilder? tabHeaderLayout;
+
   const WindowsStyleTabView({
     super.key,
     required this.tabs,
@@ -104,6 +147,7 @@ class WindowsStyleTabView extends StatefulWidget {
     this.onTabChanged,
     this.initialIndex = 0,
     this.selectedIndex,
+    this.tabHeaderLayout,
   });
 
   /// Creates a WindowsStyleTabView with default dark theme values
@@ -251,30 +295,49 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
   }
 
   Widget _buildTabBar(int selectedIndex) {
+    if (widget.tabHeaderLayout != null) {
+      return Box(
+        style: _tabBarStyle,
+        child: widget.tabHeaderLayout!(
+          context,
+          widget.tabs,
+          selectedIndex,
+          _buildTabWidget,
+        ),
+      );
+    }
+
     return Box(
       style: _tabBarStyle,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           for (int i = 0; i < widget.tabs.length; i++) ...[
-            _StyledTab(
-              title: widget.tabs[i].title,
-              icon: widget.tabs[i].icon,
-              index: i,
-              isSelected: i == selectedIndex,
-              tabStyle: _tabStyle,
-              selectedBoxStyle: _selectedTabBoxStyle,
-              unselectedBoxStyle: _unselectedTabBoxStyle,
-              selectedTextStyle: _selectedTabTextStyle,
-              unselectedTextStyle: _unselectedTabTextStyle,
-              selectedIconStyle: _selectedTabIconStyle,
-              unselectedIconStyle: _unselectedTabIconStyle,
-              onTap: () => _selectTab(i),
-            ),
+            _buildTabWidget(i, widget.tabs[i]),
             if (i < widget.tabs.length - 1) Box(style: $box.width(2)),
           ],
         ],
       ),
+    );
+  }
+
+  /// Helper function to build a styled tab widget.
+  /// Used by the default tab bar and provided to [tabHeaderLayout] for custom layouts.
+  Widget _buildTabWidget(int index, WindowsStyleTab tab, {VoidCallback? onTap}) {
+    final isSelected = index == selectedIndex;
+    return _StyledTab(
+      title: tab.title,
+      icon: tab.icon,
+      index: index,
+      isSelected: isSelected,
+      tabStyle: _tabStyle,
+      selectedBoxStyle: _selectedTabBoxStyle,
+      unselectedBoxStyle: _unselectedTabBoxStyle,
+      selectedTextStyle: _selectedTabTextStyle,
+      unselectedTextStyle: _unselectedTabTextStyle,
+      selectedIconStyle: _selectedTabIconStyle,
+      unselectedIconStyle: _unselectedTabIconStyle,
+      onTap: onTap ?? () => _selectTab(index),
     );
   }
 }

@@ -259,6 +259,12 @@ final List<Example> _examples = [
     icon: Icons.eco,
     builder: (context) => const GreenThemeExample(),
   ),
+  Example(
+    title: 'Custom Header',
+    description: 'Using tabHeaderLayout to customize the tab bar',
+    icon: Icons.dashboard_customize,
+    builder: (context) => const CustomHeaderExample(),
+  ),
 ];
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -663,4 +669,114 @@ class GreenThemeExample extends StatelessWidget {
       ],
     ),
   );
+}
+
+// ////////////////////////////////////////////////////////////////////////////
+// CUSTOM HEADER EXAMPLE
+// ////////////////////////////////////////////////////////////////////////////
+
+class CustomHeaderExample extends StatelessWidget {
+  const CustomHeaderExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return WindowsStyleTabView(
+      theme: WindowsStyleTabViewTheme.dark(),
+      tabHeaderLayout: (context, tabs, selectedIndex, buildTab) => Row(
+        children: [
+          // First two tabs
+          buildTab(0, tabs[0]),
+          Box(style: $box.width(2)),
+          buildTab(1, tabs[1]),
+          // Spacer to push the menu to the right
+          const Spacer(),
+          // Custom menu button
+          const _CustomMenuButton(
+            items: [
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, size: 18),
+                    SizedBox(width: 12),
+                    Text('Settings'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 18),
+                    SizedBox(width: 12),
+                    Text('About'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 18),
+                    SizedBox(width: 12),
+                    Text('Logout'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      tabs: [
+        WindowsStyleTab(
+          title: 'Tab One',
+          icon: Icons.tab,
+          content: _buildContent('Custom Header - Tab One', Colors.blue),
+        ),
+        WindowsStyleTab(
+          title: 'Tab Two',
+          icon: Icons.tab,
+          content: _buildContent('Custom Header - Tab Two', Colors.purple),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(String title, Color color) => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.preview, size: 64, color: color),
+        const SizedBox(height: 16),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        const Text('Using tabHeaderLayout with a custom menu button'),
+      ],
+    ),
+  );
+}
+
+class _CustomMenuButton extends StatelessWidget {
+  final List<PopupMenuEntry> items;
+
+  const _CustomMenuButton({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      tooltip: 'Menu',
+      itemBuilder: (context) => items,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.more_vert, size: 18),
+            SizedBox(width: 4),
+            Text('Menu', style: TextStyle(fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
 }
