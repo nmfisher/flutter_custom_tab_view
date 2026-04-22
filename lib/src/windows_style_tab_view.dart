@@ -314,7 +314,7 @@ class _WindowsStyleTabViewState extends State<WindowsStyleTabView> {
         children: [
           for (int i = 0; i < widget.tabs.length; i++) ...[
             _buildTabWidget(i, widget.tabs[i]),
-            if (i < widget.tabs.length - 1) Box(style: $box.width(2)),
+            if (i < widget.tabs.length - 1) Box(style: BoxStyler().width(2)),
           ],
         ],
       ),
@@ -386,7 +386,7 @@ class _StyledTab extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             StyledIcon(icon: icon, style: iconStyle),
-            Box(style: $box.width(4)),
+            Box(style: BoxStyler().width(4)),
             StyledText(title, style: textStyle),
           ],
         ),

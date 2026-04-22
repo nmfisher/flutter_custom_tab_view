@@ -531,27 +531,27 @@ class CustomMixStyleExample extends StatelessWidget {
   Widget build(BuildContext context) {
     // Create a completely custom theme using Mix
     final customTheme = WindowsStyleTabViewTheme(
-      tabBarStyle: $box
+      tabBarStyle: BoxStyler()
           .height(32)
           .paddingOnly(left: 12, top: 6)
           .color(const Color(0xFF2C2C54))
           .borderBottom(color: const Color(0xFF474787), width: 2),
-      tabStyle: $box
+      tabStyle: BoxStyler()
           .height(26)
           .paddingX(12)
           .paddingY(3)
           .borderRadiusTopLeft(const Radius.circular(6))
           .borderRadiusTopRight(const Radius.circular(6)),
-      selectedTabBoxStyle: $box
+      selectedTabBoxStyle: BoxStyler()
           .color(const Color(0xFF474787))
           .borderTop(color: const Color(0xFF706FD3), width: 2)
           .borderLeft(color: const Color(0xFF706FD3), width: 2)
           .borderRight(color: const Color(0xFF706FD3), width: 2),
-      unselectedTabBoxStyle: $box.color(const Color(0xFF2C2C54)),
-      selectedTabTextStyle: $text.style.color(Colors.white).fontSize(13),
-      unselectedTabTextStyle: $text.style.color(const Color(0xFFB4B4B4)).fontSize(13),
-      selectedTabIconStyle: $icon.size(14).color(Colors.white),
-      unselectedTabIconStyle: $icon.size(14).color(const Color(0xFFB4B4B4)),
+      unselectedTabBoxStyle: BoxStyler().color(const Color(0xFF2C2C54)),
+      selectedTabTextStyle: TextStyler().color(Colors.white).fontSize(13),
+      unselectedTabTextStyle: TextStyler().color(const Color(0xFFB4B4B4)).fontSize(13),
+      selectedTabIconStyle: IconStyler().size(14).color(Colors.white),
+      unselectedTabIconStyle: IconStyler().size(14).color(const Color(0xFFB4B4B4)),
     );
 
     return WindowsStyleTabView(
@@ -609,27 +609,27 @@ class GreenThemeExample extends StatelessWidget {
   Widget build(BuildContext context) {
     // Custom green theme
     final greenTheme = WindowsStyleTabViewTheme(
-      tabBarStyle: $box
+      tabBarStyle: BoxStyler()
           .height(28)
           .paddingOnly(left: 8, top: 4)
           .color(const Color(0xFF1B4D3E))
           .borderBottom(color: const Color(0xFF0F2B23), width: 1),
-      tabStyle: $box
+      tabStyle: BoxStyler()
           .height(24)
           .paddingX(8)
           .paddingY(2)
           .borderRadiusTopLeft(const Radius.circular(3))
           .borderRadiusTopRight(const Radius.circular(3)),
-      selectedTabBoxStyle: $box
+      selectedTabBoxStyle: BoxStyler()
           .color(const Color(0xFF2D6A4F))
           .borderTop(color: const Color(0xFF0F2B23), width: 1)
           .borderLeft(color: const Color(0xFF0F2B23), width: 1)
           .borderRight(color: const Color(0xFF0F2B23), width: 1),
-      unselectedTabBoxStyle: $box.color(const Color(0xFF1B4D3E)),
-      selectedTabTextStyle: $text.style.color(Colors.white).fontSize(11),
-      unselectedTabTextStyle: $text.style.color(const Color(0xFF95D5B2)).fontSize(11),
-      selectedTabIconStyle: $icon.size(12).color(Colors.white),
-      unselectedTabIconStyle: $icon.size(12).color(const Color(0xFF95D5B2)),
+      unselectedTabBoxStyle: BoxStyler().color(const Color(0xFF1B4D3E)),
+      selectedTabTextStyle: TextStyler().color(Colors.white).fontSize(11),
+      unselectedTabTextStyle: TextStyler().color(const Color(0xFF95D5B2)).fontSize(11),
+      selectedTabIconStyle: IconStyler().size(12).color(Colors.white),
+      unselectedTabIconStyle: IconStyler().size(12).color(const Color(0xFF95D5B2)),
     );
 
     return WindowsStyleTabView(
@@ -686,7 +686,7 @@ class CustomHeaderExample extends StatelessWidget {
         children: [
           // First two tabs
           buildTab(0, tabs[0]),
-          Box(style: $box.width(2)),
+          Box(style: BoxStyler().width(2)),
           buildTab(1, tabs[1]),
           // Spacer to push the menu to the right
           const Spacer(),

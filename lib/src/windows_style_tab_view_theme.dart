@@ -50,27 +50,27 @@ class WindowsStyleTabViewTheme {
     const unselectedTextColor = Color(0xFF9E9E9E);
 
     return WindowsStyleTabViewTheme(
-      tabBarStyle: $box
+      tabBarStyle: BoxStyler()
           .height(28)
           .paddingOnly(left: 8, top: 4)
           .color(backgroundColor)
           .borderBottom(color: borderColor, width: 1),
-      tabStyle: $box
+      tabStyle: BoxStyler()
           .height(24)
           .paddingX(8)
           .paddingY(2)
           .borderRadiusTopLeft(const Radius.circular(3))
           .borderRadiusTopRight(const Radius.circular(3)),
-      selectedTabBoxStyle: $box
+      selectedTabBoxStyle: BoxStyler()
           .color(selectedColor)
           .borderTop(color: borderColor, width: 1)
           .borderLeft(color: borderColor, width: 1)
           .borderRight(color: borderColor, width: 1),
-      unselectedTabBoxStyle: $box.color(unselectedColor),
-      selectedTabTextStyle: $text.style.color(selectedTextColor).fontSize(11),
-      unselectedTabTextStyle: $text.style.color(unselectedTextColor).fontSize(11),
-      selectedTabIconStyle: $icon.size(12).color(selectedTextColor),
-      unselectedTabIconStyle: $icon.size(12).color(unselectedTextColor),
+      unselectedTabBoxStyle: BoxStyler().color(unselectedColor),
+      selectedTabTextStyle: TextStyler().color(selectedTextColor).fontSize(11),
+      unselectedTabTextStyle: TextStyler().color(unselectedTextColor).fontSize(11),
+      selectedTabIconStyle: IconStyler().size(12).color(selectedTextColor),
+      unselectedTabIconStyle: IconStyler().size(12).color(unselectedTextColor),
     );
   }
 
@@ -84,27 +84,27 @@ class WindowsStyleTabViewTheme {
     const unselectedTextColor = Colors.black54;
 
     return WindowsStyleTabViewTheme(
-      tabBarStyle: $box
+      tabBarStyle: BoxStyler()
           .height(28)
           .paddingOnly(left: 8, top: 4)
           .color(backgroundColor)
           .borderBottom(color: borderColor, width: 1),
-      tabStyle: $box
+      tabStyle: BoxStyler()
           .height(24)
           .paddingX(8)
           .paddingY(2)
           .borderRadiusTopLeft(const Radius.circular(3))
           .borderRadiusTopRight(const Radius.circular(3)),
-      selectedTabBoxStyle: $box
+      selectedTabBoxStyle: BoxStyler()
           .color(selectedColor)
           .borderTop(color: borderColor, width: 1)
           .borderLeft(color: borderColor, width: 1)
           .borderRight(color: borderColor, width: 1),
-      unselectedTabBoxStyle: $box.color(unselectedColor),
-      selectedTabTextStyle: $text.style.color(selectedTextColor).fontSize(11),
-      unselectedTabTextStyle: $text.style.color(unselectedTextColor).fontSize(11),
-      selectedTabIconStyle: $icon.size(12).color(selectedTextColor),
-      unselectedTabIconStyle: $icon.size(12).color(unselectedTextColor),
+      unselectedTabBoxStyle: BoxStyler().color(unselectedColor),
+      selectedTabTextStyle: TextStyler().color(selectedTextColor).fontSize(11),
+      unselectedTabTextStyle: TextStyler().color(unselectedTextColor).fontSize(11),
+      selectedTabIconStyle: IconStyler().size(12).color(selectedTextColor),
+      unselectedTabIconStyle: IconStyler().size(12).color(unselectedTextColor),
     );
   }
 
@@ -118,27 +118,27 @@ class WindowsStyleTabViewTheme {
     const unselectedTextColor = Color(0xFF90CAF9);
 
     return WindowsStyleTabViewTheme(
-      tabBarStyle: $box
+      tabBarStyle: BoxStyler()
           .height(28)
           .paddingOnly(left: 8, top: 4)
           .color(backgroundColor)
           .borderBottom(color: borderColor, width: 1),
-      tabStyle: $box
+      tabStyle: BoxStyler()
           .height(24)
           .paddingX(8)
           .paddingY(2)
           .borderRadiusTopLeft(const Radius.circular(3))
           .borderRadiusTopRight(const Radius.circular(3)),
-      selectedTabBoxStyle: $box
+      selectedTabBoxStyle: BoxStyler()
           .color(selectedColor)
           .borderTop(color: borderColor, width: 1)
           .borderLeft(color: borderColor, width: 1)
           .borderRight(color: borderColor, width: 1),
-      unselectedTabBoxStyle: $box.color(unselectedColor),
-      selectedTabTextStyle: $text.style.color(selectedTextColor).fontSize(11),
-      unselectedTabTextStyle: $text.style.color(unselectedTextColor).fontSize(11),
-      selectedTabIconStyle: $icon.size(12).color(selectedTextColor),
-      unselectedTabIconStyle: $icon.size(12).color(unselectedTextColor),
+      unselectedTabBoxStyle: BoxStyler().color(unselectedColor),
+      selectedTabTextStyle: TextStyler().color(selectedTextColor).fontSize(11),
+      unselectedTabTextStyle: TextStyler().color(unselectedTextColor).fontSize(11),
+      selectedTabIconStyle: IconStyler().size(12).color(selectedTextColor),
+      unselectedTabIconStyle: IconStyler().size(12).color(unselectedTextColor),
     );
   }
 
